@@ -243,3 +243,5 @@ dataset_class2[['Age', 'Fare']].boxplot()
 
 dataset_class3[['Age', 'Fare']].boxplot()
 
+# Зависимость по выжившим, возраста и стоимости билета
+df.groupby('Survived')[['Age', 'Ticket']].plot()
