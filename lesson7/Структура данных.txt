@@ -1,0 +1,30 @@
+passenger
+- id (series primary_key autoincrement)
+- survived (int / bool) "выжил (1-да, 0- нет)"
+- name (text / varchar 255) "ФИО"
+- sex (text / varchar 255) "Пол"
+- age (float) "Возраст"
+- sibSp (integer) "число братьев, сестер или супругов на борту у человека"
+- parch (integer) "количество родителей или детей, с которыми путешествовал каждый пассажир"
+- ticket_id (int foreign_key)
+
+ticket
+- id (series primary_key autoincrement)
+- pclass_id (integer foreign_key)
+- cabin_id (integer foreign_key)
+- embarked_id (integer foreign_key)
+- ticket (text / varchar 255) "Номер билета"
+- fare (float) "Цена билета"
+
+pclass
+- id (series primary_key autoincrement)
+- pclass (integer) "Класс круиза"
+- cabin_id (integer foreign_key)
+
+cabin
+- id (series primary_key autoincrement)
+- cabin (text / varchar 255) "Номер каюты"
+
+embarked
+- id (series primary_key autoincrement)
+- embarked (text / varchar 255) "Порт посадки"
