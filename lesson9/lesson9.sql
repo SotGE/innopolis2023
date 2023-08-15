@@ -198,3 +198,4 @@ limit
  * Приложите скрин результата запроса к данным курсов после
  * выполнения команды INSERT к таблице которая была изменена.
  */
+--INSERT INTO table_name (column1, column2, column3,..) VALUES ( value1, value2, value3,..);
