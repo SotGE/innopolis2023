@@ -460,3 +460,51 @@ order by
  * Цифровая трансформация | удовлетворительно   | 2
  * -----------------------------------------------------------------------------
  */
+select
+	course.name as "курс"
+	, list."student_rating" as "оценка"
+	, count(student.name) as "количество студентов"
+from
+(
+	select
+		case
+			when
+				student_on_course.student_rating < 30
+			then
+				'неудовлетворительно'
+			when
+				student_on_course.student_rating >= 30
+				and student_on_course.student_rating < 60
+			then
+				'удовлетворительно'
+			when
+				student_on_course.student_rating >= 60
+				and student_on_course.student_rating < 85
+			then
+				'хорошо'
+			else
+				'отлично'
+		end as "student_rating"
+		, student_on_course.student_id as "student_id"
+		, student_on_course.student_rating as "student_rating_number"
+	from
+		student_on_course
+) as list
+left join
+	student
+on
+	student.id=list."student_id"
+left join
+	student_on_course
+on
+	student_on_course.student_id=student.id
+left join
+	course
+on
+	course.id=student_on_course.course_id
+group by
+	"курс"
+	, "оценка"
+order by
+	"курс" asc
+;
