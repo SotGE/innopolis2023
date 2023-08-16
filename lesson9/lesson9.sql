@@ -403,37 +403,60 @@ order by
  * хорошо              | 5
  * ------------------------------------------------------
  */
-case
-	when
-		student_on_course.student_rating < 30
-	then
-		'неудовлетворительно'
-	when
-		student_on_course.student_rating >= 30
-		and student_on_course.student_rating < 60
-	then
-		'удовлетворительно'
-	when
-		student_on_course.student_rating >= 60
-		and student_on_course.student_rating < 85
-	then
-		'хорошо'
-	else
-		'отлично'
-end
-
-
-
 select
-	concat('неудовлетворительно') as "оценка",
-	count(student.name) as "количество студентов"
+	list."student_rating" as "оценка"
+	, count(student.name) as "количество студентов"
 from
-	student
+(
+	select
+		case
+			when
+				student_on_course.student_rating < 30
+			then
+				'неудовлетворительно'
+			when
+				student_on_course.student_rating >= 30
+				and student_on_course.student_rating < 60
+			then
+				'удовлетворительно'
+			when
+				student_on_course.student_rating >= 60
+				and student_on_course.student_rating < 85
+			then
+				'хорошо'
+			else
+				'отлично'
+		end as "student_rating"
+		, student_on_course.student_id as "student_id"
+	from
+		student_on_course
+) as list
 left join
-	student_on_course
+	student
 on
-	student_on_course.student_id=student.id
-where
-	student_on_course.student_rating < 30
+	student.id="student_id"
+group by
+	list."student_rating"
+order by
+	list."student_rating"
 ;
-	
+
+
+
+/*
+ * n. Дополните SQL запрос из задания a), с указанием вывода имени курса и
+ * количество оценок внутри курса. Результат отсортируйте по названию
+ * курса и оценки студента. Пример части результата ниже.
+ * Обратите внимание на именование результирующих столбцов в вашем
+ * решении. Курс “Machine Learning”, так как у него нет студентов -
+ * проигнорируйте, используя соответствующий тип JOIN.
+ * -----------------------------------------------------------------------------
+ * курс                   | оценка              | количество студентов
+ * -----------------------------------------------------------------------------
+ * Data Mining            | неудовлетворительно | 1
+ * Data Mining            | хорошо              | 2
+ * Актерское мастерство   | отлично             | 2
+ * …                      | …                   | …
+ * Цифровая трансформация | удовлетворительно   | 2
+ * -----------------------------------------------------------------------------
+ */
