@@ -403,3 +403,16 @@ order by
  * хорошо              | 5
  * ------------------------------------------------------
  */
+select
+	concat('неудовлетворительно') as "оценка",
+	count(student.name) as "количество студентов"
+from
+	student
+left join
+	student_on_course
+on
+	student_on_course.student_id=student.id
+where
+	student_on_course.student_rating < 30
+
+	
