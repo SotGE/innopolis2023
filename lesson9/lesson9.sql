@@ -403,6 +403,27 @@ order by
  * хорошо              | 5
  * ------------------------------------------------------
  */
+case
+	when
+		student_on_course.student_rating < 30
+	then
+		'неудовлетворительно'
+	when
+		student_on_course.student_rating >= 30
+		and student_on_course.student_rating < 60
+	then
+		'удовлетворительно'
+	when
+		student_on_course.student_rating >= 60
+		and student_on_course.student_rating < 85
+	then
+		'хорошо'
+	else
+		'отлично'
+end
+
+
+
 select
 	concat('неудовлетворительно') as "оценка",
 	count(student.name) as "количество студентов"
@@ -414,5 +435,5 @@ on
 	student_on_course.student_id=student.id
 where
 	student_on_course.student_rating < 30
-
+;
 	
