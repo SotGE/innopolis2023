@@ -9,6 +9,8 @@ from
 	student
 where
 	city='Казань' or city='Москва'
+order by
+	name desc
 ;
 
 
@@ -31,7 +33,7 @@ select
 from
 	college
 order by
-	"полная информация"
+	"полная информация" asc
 ;
 
 
@@ -90,8 +92,7 @@ from
 	course
 where
 	is_online=true
-	and amount_of_students >= 27
-	and amount_of_students <= 310
+	and amount_of_students between 27 and 310
 order by
 	name desc,
 	amount_of_students desc
@@ -198,4 +199,52 @@ limit
  * Приложите скрин результата запроса к данным курсов после
  * выполнения команды INSERT к таблице которая была изменена.
  */
---INSERT INTO table_name (column1, column2, column3,..) VALUES ( value1, value2, value3,..);
+select
+	*
+from
+	course
+;
+------------------------------------------------------
+with
+	search_course
+as (
+    select
+    	id as search_course_id
+    from
+    	course
+    where
+    	name='Data Mining'
+)
+insert into course
+	(id, name, is_online, amount_of_students, college_id)
+select
+	60, 'Machine Learning', false, 17, search_course_id
+from
+	search_course
+;
+------------------------------------------------------
+select
+	*
+from
+	course
+;
+
+
+
+/*
+ * j. Напишите SQL скрипт который подсчитывает симметрическую разницу
+ * множеств A и B.
+ * (A \ B) ⋃ (B \ A)
+ * где A - таблица course, B - таблица student_on_course, “\” - это разница
+ * множеств, “⋃” - объединение множеств. Необходимо подсчитать на
+ * основании атрибута id из обеих таблиц. Результат отсортируйте по 1
+ * столбцу. Пример результата представлен ниже.
+ * ------------------------------------------------------
+ * id
+ * 70
+ * 80
+ * 90
+ * 100
+ * …
+ * ------------------------------------------------------
+ */
