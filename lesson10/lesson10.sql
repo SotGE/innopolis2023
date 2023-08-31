@@ -17,6 +17,7 @@ insert into student(id, name, total_score) values (50, 'Сергей Петро�
 
 create table activity_scores
 (
+    id serial primary key,
     student_id integer not null,
     activity_type text not null,
     score integer not null default 0,
@@ -69,7 +70,52 @@ insert into activity_scores(student_id, activity_type, score) values (50, 'Queri
  * -----------------------------------------------------------------------------
  * Решение:
  */
+drop function calculate_scholarship cascade;
+/* ----------------------------------------------------------------------------- */
+create or replace function
+	calculate_scholarship()
+returns
+	trigger as $$
+declare
+	user_score numeric;
+begin
+	-- Получаем балл за деятельность
+	select
+		sum(score)
+	into
+		user_score
+	from
+		activity_scores
+	where
+		activity_scores.student_id=new.student_id;
+	
+	-- Условие расчета степендии
+	if user_score >= 90 then
+		raise notice e'Балл студента: %\nСтепендия: % руб.\n', user_score, 1000;
+	elseif user_score >= 80 and user_score < 90 then
+		raise notice e'Балл студента: %\nСтепендия: % руб.\n', user_score, 500;
+	else
+		raise notice e'Балл студента: %\nСтепендия: % руб.\n', user_score, 0;
+	end if;
 
+	return new;
+end;
+$$ language plpgsql;
+/* ----------------------------------------------------------------------------- */
+create or replace trigger
+	update_scholarship_trigger
+after update on
+	activity_scores
+for each row
+execute function calculate_scholarship();
+/* ----------------------------------------------------------------------------- */
+update
+	activity_scores
+set
+	score = 90
+where
+	id = 1
+;
 
 /*
  * -----------------------------------------------------------------------------
@@ -108,3 +154,38 @@ insert into activity_scores(student_id, activity_type, score) values (50, 'Queri
  * -----------------------------------------------------------------------------
  * Решение:
  */
+create or replace function
+	calculate_scholarship()
+returns
+	trigger as $$
+begin
+	update
+		student
+	set
+		score = (
+			select
+				sum(score)
+			from
+				activity_scores
+			where
+				student_id=new.id
+		)
+	;
+	return new;
+end;
+$$ language plpgsql;
+/* ----------------------------------------------------------------------------- */
+create or replace trigger
+	update_scholarship_trigger
+after insert on
+	activity_scores
+for each row
+execute function calculate_scholarship();
+/* ----------------------------------------------------------------------------- */
+insert into
+	activity_scores
+values (
+	10,
+	'Exam',
+	30
+);
