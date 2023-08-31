@@ -154,33 +154,54 @@ where
  * -----------------------------------------------------------------------------
  * Решение:
  */
+drop function update_total_score cascade;
+/* ----------------------------------------------------------------------------- */
 create or replace function
-	calculate_scholarship()
+	update_total_score(student_id integer)
 returns
 	trigger as $$
+declare
+    scores_array integer;
+    i integer;
+	scores_sum integer;
 begin
-	update
-		student
-	set
-		score = (
-			select
-				sum(score)
-			from
-				activity_scores
-			where
-				student_id=new.id
-		)
+	scores_sum := 0;
+	select
+		total_score
+	from
+		activity_scores
+	into
+		scores_array
+	where
+    	student_id=student_id
 	;
+	foreach i IN ARRAY scores_array
+    loop
+    	scores_sum = scores_sum + i;
+    end loop;
+	raise notice e'Общий балл: %', scores_sum;
+--	update
+--		student
+--	set
+--		total_score = (
+--			select
+--				sum(score)
+--			from
+--				activity_scores
+--			where
+--				student_id=student_id
+--		)
+--	;
 	return new;
 end;
 $$ language plpgsql;
 /* ----------------------------------------------------------------------------- */
 create or replace trigger
-	update_scholarship_trigger
+	insert_total_score_trigger
 after insert on
 	activity_scores
 for each row
-execute function calculate_scholarship();
+execute function update_total_score();
 /* ----------------------------------------------------------------------------- */
 insert into
 	activity_scores
