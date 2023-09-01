@@ -3,11 +3,13 @@
  * Лабораторная работа по теме "Язык PL/pgSQL"
  * -----------------------------------------------------------------------------
  */
+set search_path to lesson10;
+
 create table student
 (
     id serial primary key,
     name text not null,
-    total_score integer not null default 0 check (total_score BETWEEN 0 and 100)
+    total_score integer not null default 0
 );
 insert into student(id, name, total_score) values (10, 'Иван Иванов', 0);
 insert into student(id, name, total_score) values (20, 'Екатерина Андреева', 0);
@@ -78,6 +80,7 @@ returns
 	trigger as $$
 declare
 	user_score numeric;
+	student_name text;
 begin
 	-- Получаем балл за деятельность
 	select
@@ -89,13 +92,23 @@ begin
 	where
 		activity_scores.student_id=new.student_id;
 	
-	-- Условие расчета степендии
+	-- Имя студента	
+	student_name := (
+		select
+			name
+		from
+			student
+		where
+	    	id=new.student_id
+    );
+	
+	-- Условие расчета степендии студента
 	if user_score >= 90 then
-		raise notice e'Балл студента: %\nСтепендия: % руб.\n', user_score, 1000;
+		raise notice e'Студент: %\nБалл студента: %\nСтепендия: % руб.\n', student_name, user_score, 1000;
 	elseif user_score >= 80 and user_score < 90 then
-		raise notice e'Балл студента: %\nСтепендия: % руб.\n', user_score, 500;
+		raise notice e'Студент: %\nБалл студента: %\nСтепендия: % руб.\n', student_name, user_score, 500;
 	else
-		raise notice e'Балл студента: %\nСтепендия: % руб.\n', user_score, 0;
+		raise notice e'Студент: %\nБалл студента: %\nСтепендия: % руб.\n', student_name, user_score, 0;
 	end if;
 
 	return new;
@@ -112,9 +125,9 @@ execute function calculate_scholarship();
 update
 	activity_scores
 set
-	score = 90
+	score = 50
 where
-	id = 1
+	id = 5
 ;
 
 /*
@@ -157,41 +170,54 @@ where
 drop function update_total_score cascade;
 /* ----------------------------------------------------------------------------- */
 create or replace function
-	update_total_score(student_id integer)
+	update_total_score()
 returns
 	trigger as $$
 declare
-    scores_array integer;
+    scores_array integer[];
     i integer;
 	scores_sum integer;
+	student_name text;
 begin
+	-- Значение суммы по умолчанию
 	scores_sum := 0;
-	select
-		total_score
-	from
-		activity_scores
-	into
-		scores_array
-	where
-    	student_id=student_id
-	;
-	foreach i IN ARRAY scores_array
-    loop
-    	scores_sum = scores_sum + i;
+
+	-- Имя студента	
+	student_name := (
+		select
+			name
+		from
+			student
+		where
+	    	id=new.student_id
+    );
+
+	-- Массив из баллов за деятельность для студента
+	scores_array := array(
+		select
+			score
+		from
+			activity_scores
+		where
+	    	student_id=new.student_id
+	);
+
+	-- Перебор массива из баллов за деятельность и сложение в общую сумму
+	foreach i in array scores_array loop
+    	scores_sum=scores_sum+i;
     end loop;
-	raise notice e'Общий балл: %', scores_sum;
---	update
---		student
---	set
---		total_score = (
---			select
---				sum(score)
---			from
---				activity_scores
---			where
---				student_id=student_id
---		)
---	;
+   
+	-- Обновление общего балла у студента
+	update
+		student
+	set
+		total_score=scores_sum
+	where
+		id=new.student_id
+	;
+
+	-- Информационный вывод
+	raise notice e'Студент: %\nОбщий балл: %\n', student_name, scores_sum;
 	return new;
 end;
 $$ language plpgsql;
@@ -203,10 +229,25 @@ after insert on
 for each row
 execute function update_total_score();
 /* ----------------------------------------------------------------------------- */
-insert into
-	activity_scores
+insert into activity_scores (
+	student_id,
+	activity_type,
+	score
+)
 values (
-	10,
+	20,
 	'Exam',
 	30
 );
+/* ----------------------------------------------------------------------------- */
+select
+	*
+from
+	student
+;
+/* ----------------------------------------------------------------------------- */
+select
+	*
+from
+	activity_scores
+;
