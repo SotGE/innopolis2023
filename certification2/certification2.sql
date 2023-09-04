@@ -133,3 +133,4 @@ create view air_view as
 	limit
 		10
 ;
+select * from air_view;
