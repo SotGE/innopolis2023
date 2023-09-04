@@ -61,3 +61,75 @@ order by
  * произвольной таблице и результат отсортируйте (ORDER BY) с ограничением
  * вывода по количеству строк (LIMIT)
  */
+select
+	*
+from
+	tickets
+where
+	passenger_name like 'MAKSIM%'
+order by
+	passenger_name
+limit
+	10
+;
+
+/*
+ * 3) Используя SQL язык напишите OLAP запрос к произвольной связке таблиц (в
+ * рамках JOIN оператора), используя оператор GROUP BY и любые агрегатные
+ * функции count, min, max, sum.
+ */
+select
+	count(aircrafts.aircraft_code),
+	sum(aircrafts.range)
+from
+	aircrafts
+full join
+	seats
+on
+	seats.aircraft_code=aircrafts.aircraft_code
+group by
+	aircrafts.aircraft_code,
+	aircrafts.range
+order by
+	aircrafts.aircraft_code,
+	aircrafts.range
+;
+
+/*
+ * 4) Используя SQL язык примените JOIN операторы (INNER, LEFT, RIGHT) для
+ * более чем двух таблиц из модели данных.
+ */
+select
+	*
+from
+	seats
+inner join
+	aircrafts
+on
+	aircrafts.aircraft_code=seats.aircraft_code
+left join
+	flights
+on
+	flights.aircraft_code=aircrafts.aircraft_code
+right join
+	ticket_flights
+on
+	ticket_flights.flight_id=flights.flight_id
+;
+
+/*
+ * 5) Создайте виртуальную таблицу VIEW с произвольным именем для SQL запроса
+ * из задания 2)
+ */
+create view air_view as
+	select
+		*
+	from
+		tickets
+	where
+		passenger_name like 'MAKSIM%'
+	order by
+		passenger_name
+	limit
+		10
+;
