@@ -1,0 +1,30 @@
+Image: пиджак/0119.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
+Image: пиджак/0013.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
+Image: пиджак/0121.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
+Image: пиджак/0148.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
+Image: пиджак/0038.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
+Image: брюки/0107.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
+Image: брюки/0000.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
+Image: брюки/0062.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
+Image: брюки/0007.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
+Image: брюки/0022.jpg, Prediction: пиджак
+Training Accuracy: 0.5
+Validation Accuracy: 0.5
